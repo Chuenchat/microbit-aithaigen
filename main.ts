@@ -12,9 +12,8 @@ function read_light_intensity (light_intensity_pin: number) {
     return Environment.ReadLightIntensity(light_intensity_pin)
 }
 input.onButtonPressed(Button.A, function () {
-    serial.writeString("responseA")
     if (enable_listen_button_ab) {
-        responseA = "" + commandButtonAB + "::a1"
+        responseA = "" + commandButtonAB + "::a1\n"
         serial.writeString(responseA)
     }
 })
@@ -53,19 +52,18 @@ function read_pir (pin: number) {
     }
 }
 input.onButtonPressed(Button.B, function () {
-    serial.writeString("responseB")
     if (enable_listen_button_ab) {
-        responseB = "" + commandButtonAB + "::b1"
+        responseB = "" + commandButtonAB + "::b1\n"
         serial.writeString(responseB)
     }
 })
 function listen_button_ab (state: number) {
-    if (state === 1) {
-        enable_listen_button_ab = true;
-        return 'ready'
-    } else if (state === 0) {
-        enable_listen_button_ab = false;
-        return 'off'
+    if (state == 1) {
+        enable_listen_button_ab = true
+        return "ready"
+    } else if (state == 0) {
+        enable_listen_button_ab = false
+        return "off"
     } else {
         return state
     }
@@ -166,13 +164,14 @@ function read_BME280 (state: number) {
 let responseB = ""
 let responseA = ""
 let enable_listen_button_ab = false
-let commandButtonAB = "t"
-let readyForNextCommand = false
-let message = ""
-let function_name = ""
-let function_id = ""
-let response4 = ""
+let commandButtonAB = ""
 let response23 = ""
+let response4 = ""
+let function_id = ""
+let function_name = ""
+let message = ""
+let readyForNextCommand = false
+commandButtonAB = "t"
 serial.setTxBufferSize(32)
 serial.setRxBufferSize(96)
 function add_text (text: string | number) {
