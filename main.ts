@@ -5,6 +5,11 @@ function enable_gesture (state: number) {
     listenning_to.gesture = state === 1;
 return state === 1 ? "ready" : state === 0 ? "off" : state
 }
+input.onGesture(Gesture.EightG, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::EightG\n")
+    }
+})
 function read_analog (pin: number) {
     return pins.analogReadPin(pin)
 }
@@ -19,13 +24,38 @@ return state === 1 ? "ready" : state === 0 ? "off" : state
 function read_light_intensity (light_intensity_pin: number) {
     return Environment.ReadLightIntensity(light_intensity_pin)
 }
+input.onButtonPressed(Button.A, function () {
+    if (listenning_to.button_ab) {
+        serial.writeString("" + commands.button_ab + "::a1\n")
+    }
+})
+input.onGesture(Gesture.FreeFall, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::FreeFall\n")
+    }
+})
+input.onGesture(Gesture.LogoUp, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::LogoUp\n")
+    }
+})
 function move_servo (pin: number, angle: number) {
     pins.servoWritePin(pin, angle)
 return 1
 }
+input.onGesture(Gesture.TiltLeft, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::TiltLeft\n")
+    }
+})
 function read_digital (pin: number) {
     return pins.digitalReadPin(pin)
 }
+input.onGesture(Gesture.SixG, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::SixG\n")
+    }
+})
 function set_analog_period (pin: number, period: number) {
     pins.analogSetPeriod(pin, period)
 return 1
@@ -37,9 +67,19 @@ function play_music (music_id: number) {
     music._playDefaultBackground(music.builtInPlayableMelody(music_id), music.PlaybackMode.InBackground)
     return 1
 }
+input.onGesture(Gesture.ScreenUp, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::ScreenUp\n")
+    }
+})
 function read_soil_humidity (soil_moisture_pin: number) {
     return Environment.ReadSoilHumidity(soil_moisture_pin)
 }
+input.onGesture(Gesture.ScreenDown, function () {
+    if (listenning_to.gesture) {
+        serial.writeString("" + commands.gesture + "::ScreenDown\n")
+    }
+})
 function read_noise (noise_pin: number) {
     return Environment.ReadNoise(noise_pin)
 }
@@ -61,11 +101,6 @@ function enable_button_ab (state: number) {
     listenning_to.button_ab = state === 1;
 return state === 1 ? "ready" : state === 0 ? "off" : state
 }
-input.onButtonPressed(Button.A, function () {
-    if (listenning_to.button_ab) {
-        serial.writeString("" + commands.button_ab + "::a1\n")
-    }
-})
 input.onButtonPressed(Button.B, function () {
     if (listenning_to.button_ab) {
         serial.writeString("" + commands.button_ab + "::b1\n")
@@ -76,9 +111,9 @@ input.onGesture(Gesture.Shake, function () {
         serial.writeString("" + commands.gesture + "::Shake\n")
     }
 })
-input.onGesture(Gesture.LogoUp, function () {
+input.onGesture(Gesture.TiltRight, function () {
     if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::LogoUp\n")
+        serial.writeString("" + commands.gesture + "::TiltRight\n")
     }
 })
 input.onGesture(Gesture.LogoDown, function () {
@@ -86,53 +121,15 @@ input.onGesture(Gesture.LogoDown, function () {
         serial.writeString("" + commands.gesture + "::LogoDown\n")
     }
 })
-input.onGesture(Gesture.TiltLeft, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::TiltLeft\n")
-    }
-})
-input.onGesture(Gesture.TiltRight, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::TiltRight\n")
-    }
-})
-input.onGesture(Gesture.ScreenUp, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::ScreenUp\n")
-    }
-})
-input.onGesture(Gesture.ScreenDown, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::ScreenDown\n")
-    }
-})
-input.onGesture(Gesture.FreeFall, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::FreeFall\n")
+input.onLogoEvent(TouchButtonEvent.Touched, function () {
+    if (listenning_to.logo) {
+        serial.writeString("" + commands.logo + "::1\n")
     }
 })
 input.onGesture(Gesture.ThreeG, function () {
     if (listenning_to.gesture) {
         serial.writeString("" + commands.gesture + "::ThreeG\n")
     }
-})
-input.onGesture(Gesture.SixG, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::SixG\n")
-    }
-})
-input.onGesture(Gesture.EightG, function () {
-    if (listenning_to.gesture) {
-        serial.writeString("" + commands.gesture + "::EightG\n")
-    }
-})
-input.onLogoEvent(TouchButtonEvent.Touched, function () {
-    if (listenning_to.logo) {
-        serial.writeString("" + commands.logo + "::1\n")
-    }
-})
-input.onLogoEvent(TouchButtonEvent.Pressed, function () {
-	
 })
 serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
     // exit if not ready
@@ -318,3 +315,9 @@ serial.setBaudRate(BaudRate.BaudRate115200)
 OLED.init(128, 64)
 OLED.clear()
 readyForNextCommand = true
+basic.forever(function () {
+    if (listenning_to.accelerometer) {
+        serial.writeString("" + commands.accelerometer + "::" + input.acceleration(Dimension.X) + "," + input.acceleration(Dimension.Y) + "," + input.acceleration(Dimension.Z) + "\n")
+    }
+    basic.pause(100)
+})
