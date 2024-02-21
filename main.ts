@@ -17,9 +17,13 @@ function write_analog (pin: number, value: number) {
     pins.analogWritePin(pin, value)
 return 1
 }
-function enable_accelerometer (state: number) {
+function enable_accelerometer(state: number) {
     listenning_to.accelerometer = state === 1;
-return state === 1 ? "ready" : state === 0 ? "off" : state
+    return state === 1 ? "ready" : state === 0 ? "off" : state
+}
+function enable_light_level(state: number) {
+    listenning_to.light_level = state === 1;
+    return state === 1 ? "ready" : state === 0 ? "off" : state
 }
 function read_light_intensity (light_intensity_pin: number) {
     return Environment.ReadLightIntensity(light_intensity_pin)
@@ -226,23 +230,25 @@ function read_BME280 (state: number) {
     }
     return 0
 }
-let response23 = ""
-let response4 = ""
-let function_id = ""
-let function_name = ""
-let message = ""
 let readyForNextCommand = false
+let message = ""
+let function_name = ""
+let function_id = ""
+let response4 = ""
+let response23 = ""
 let listenning_to = {
     logo: false,
     button_ab: false,
     gesture: false,
     accelerometer: false,
+    light_level: false,
 }
 let commands = {
     logo: "m0",
     button_ab: "m1",
     gesture: "m2",
     accelerometer: "m3",
+    light_level: "m4",
 }
 serial.setTxBufferSize(32)
 serial.setRxBufferSize(96)
@@ -285,6 +291,7 @@ const functions: { [key: string]: Function } = {
     'm1': enable_button_ab,
     'm2': enable_gesture,
     'm3': enable_accelerometer,
+    'm4': enable_light_level,
 
     'v': write_led_matrix,
 }
@@ -318,6 +325,9 @@ readyForNextCommand = true
 basic.forever(function () {
     if (listenning_to.accelerometer) {
         serial.writeString("" + commands.accelerometer + "::" + input.acceleration(Dimension.X) + "," + input.acceleration(Dimension.Y) + "," + input.acceleration(Dimension.Z) + "\n")
+    }
+    if (listenning_to.light_level) {
+        serial.writeString("" + commands.light_level + "::" + input.lightLevel() + "\n")
     }
     basic.pause(100)
 })
